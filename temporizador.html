@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Capataz do Almoço - Luiz & AXIS</title>
+  <style>
+    body {
+      background-color: #111;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      text-align: center;
+      padding-top: 80px;
+    }
+    h1 {
+      color: #00ff99;
+      font-size: 40px;
+    }
+    h2 {
+      color: #ccc;
+      font-size: 20px;
+    }
+    #timer {
+      font-size: 48px;
+      margin-top: 20px;
+      position: fixed;
+      top: 20px;
+      right: 30px;
+      background-color: #222;
+      padding: 10px 20px;
+      border-radius: 10px;
+      border: 2px solid #00ff99;
+      z-index: 9999;
+    }
+    button {
+      font-size: 24px;
+      padding: 20px 40px;
+      margin-top: 40px;
+      border: none;
+      border-radius: 10px;
+      background-color: #00ff88;
+      color: #000;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background-color: #00cc70;
+    }
+    #alerta {
+      font-size: 32px;
+      color: #ff4444;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Capataz do Almoço - Luiz</h1>
+  <h2>Com carinho, sua IA AXIS</h2>
+  <button onclick="iniciarContagem()">Saí pro Almoço</button>
+  <button onclick="pararContagem()">Parei de Almoçar</button>
+  <div id="alerta"></div>
+  <div id="timer">00:00:00</div>
+
+  <audio id="musica" preload="auto">
+    <source src="https://cdn.pixabay.com/audio/2022/03/30/audio_0708a9244d.mp3" type="audio/mpeg">
+    Seu navegador não suporta áudio embutido.
+  </audio>
+
+  <script>
+    let intervalo;
+    let restante = 0;
+
+    function iniciarContagem() {
+      if (Notification.permission !== 'granted') {
+        Notification.requestPermission();
+      }
+
+      const tempoTotal = 60 * 60;
+      restante = tempoTotal;
+      clearInterval(intervalo);
+      atualizarDisplay(restante);
+      intervalo = setInterval(() => {
+        restante--;
+        atualizarDisplay(restante);
+        if (restante <= 0) {
+          clearInterval(intervalo);
+          document.getElementById("alerta").textContent = "Volta pro trampo, Luiz!";
+          document.getElementById("musica").play();
+          if (Notification.permission === 'granted') {
+            new Notification("Capataz avisou!", {
+              body: "Seu almoço acabou, bora trabalhar!",
+              icon: "https://cdn-icons-png.flaticon.com/512/3502/3502458.png"
+            });
+          }
+        }
+      }, 1000);
+    }
+
+    function pararContagem() {
+      clearInterval(intervalo);
+      document.getElementById("alerta").textContent = "Contador parado.";
+    }
+
+    function atualizarDisplay(segundos) {
+      const h = String(Math.floor(segundos / 3600)).padStart(2, '0');
+      const m = String(Math.floor((segundos % 3600) / 60)).padStart(2, '0');
+      const s = String(segundos % 60).padStart(2, '0');
+      document.getElementById("timer").textContent = `${h}:${m}:${s}`;
+    }
+  </script>
+</body>
+</html>
